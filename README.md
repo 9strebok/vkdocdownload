@@ -5,7 +5,7 @@
   pip3 install -r requirements.txt
 ```
 
-#:pencil2: Usage
+# :pencil2: Usage
 
 ### Help
 ```bash
