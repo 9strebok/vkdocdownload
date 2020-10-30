@@ -32,6 +32,8 @@
 ```
 
 ### Change save path
+> Default loot path: ./loot
+
 ```bash
   python3 vkdd.py -s -p/--path [path] [Query]
 ```
