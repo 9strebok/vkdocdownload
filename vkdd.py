@@ -91,10 +91,10 @@ def parse_args(desc: str):
     )
 
     return args_parser.parse_args()
+
+
 def get_user_token(settings: str):
-    app_id = input(
-            green_paint("Enter vk app ID: ")
-    )
+    app_id = input(green_paint("Enter vk app ID: ")).strip()
 
     params = {
         'client_id':       app_id,
@@ -108,11 +108,9 @@ def get_user_token(settings: str):
     url = f"https://oauth.vk.com/authorize?{urlencode(params)}"
     webbrowser.open(url)
 
-    token = input(green_paint("Parse your access token there: "))
+    token = input(green_paint("Parse your access token there: ")).strip()
 
-    print(
-        green_paint_with_output("Saving your App ID and TOKEN in", settings)
-    )
+    print(green_paint_with_output("Saving your App ID and TOKEN in", settings))
 
     config = ConfigParser()
     config.add_section("SETTINGS")
@@ -126,25 +124,24 @@ def get_user_token(settings: str):
 
 
 class VkDocument:
-
     def __init__(self, data):
-        self.id = data['id'] # File ID
+        self.id       = data['id'] # File ID
         self.owner_id = data['owner_id'] # File owner ID
-        self.title = data['title'] # File name
-        self.size = data['size'] # File size in bytes
-        self.ext = data['ext'] # File extension
-        self.url = data['url'] # File url
+        self.title    = data['title'] # File name
+        self.size     = data['size'] # File size in bytes
+        self.ext      = data['ext'] # File extension
+        self.url      = data['url'] # File url
         self.add_date = data['date'] # Date
 
 
     def __str__(self):
-        title    = self.title
-        doc_id   = self.id
-        owner    = self.owner_id
-        add_date = date.fromtimestamp(self.add_date)
-        B        = self.size
-        KB       = round(self.size/(2**10), 2)
-        MB       = round(self.size/(2**20), 2)
+        title         = self.title
+        doc_id        = self.id
+        owner         = self.owner_id
+        add_date      = date.fromtimestamp(self.add_date)
+        B             = self.size
+        KB            = round(self.size/(2**10), 2)
+        MB            = round(self.size/(2**20), 2)
 
         return f"""
 {green_paint('Title:')}\t         {title}
@@ -154,10 +151,11 @@ class VkDocument:
 {green_paint('Size:')}\t         {B} Bytes | {KB} KB | {MB} MB
                 """
 
+
     def download(self, loot_dir):
-        doc_id = self.id
-        owner  = self.owner_id
-        title  = self.title
+        doc_id        = self.id
+        owner         = self.owner_id
+        title         = self.title
 
         filename = f"{doc_id}_{owner}_{title}"
 
@@ -166,20 +164,20 @@ class VkDocument:
         except Exception:
             pass
 
-        Path(loot_dir+"/"+filename).write_bytes(data)
+        Path(loot_dir + "/" + filename).write_bytes(data)
         return green_paint_with_output("Saved:", filename)
 
 
 def search_docs(query, token):
     params = {
-        'q':            query,
-        'count':        1000,
-        'access_token': token,
-        'v':            5.68
+        'q':             query,
+        'count':         1000,
+        'access_token':  token,
+        'v':             5.68
     }
-    url = f'https://api.vk.com/method/docs.search?{urlencode(params)}'
+    url      = f'https://api.vk.com/method/docs.search?{urlencode(params)}'
     response = urlopen(url)
-    data = json.loads(response.read().decode())
+    data     = json.loads(response.read().decode())
 
     if 'error' in data and data['error']['error_code'] == 5:
         print(
@@ -199,11 +197,10 @@ def printTotalInfo(docs):
     MB         = round(total_size/(2**20), 2)
     GB         = round(total_size/(2**30), 2)
 
-    t = green_paint_with_output("\nTotal files:", str(nfiles))
+    t = green_paint_with_output("\nTotal files:", nfiles)
     z = green_paint_with_output("\nTotal size: ", f"{str(B)} Bytes | {str(KB)} KB | {str(MB)} MB | {str(GB)} GB")
 
     print(t+z)
-
 
 
 def downloadDocs(docs, nthreads, loot_dir):
@@ -216,9 +213,8 @@ def downloadDocs(docs, nthreads, loot_dir):
                 raise Exception
 
 
-
 def main():
-    BANNER = """HHHHHHHHH"""
+    BANNER = green_paint("""VKDOCDOWNLOAD""")
     DESC = "Search and download vk.com documents"
     args = parse_args(DESC)
 
@@ -230,6 +226,7 @@ def main():
     SETTINGS_FILE = Path(args.settings)
 
 
+    print(BANNER)
     if not SETTINGS_FILE.exists():
         TOKEN = get_user_token(SETTINGS_FILE)
     else:
