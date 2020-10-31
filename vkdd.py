@@ -125,13 +125,13 @@ def get_user_token(settings: str):
 
 class VkDocument:
     def __init__(self, data):
-        self.id       = data['id'] # File ID
+        self.id       = data['id']       # File ID
         self.owner_id = data['owner_id'] # File owner ID
-        self.title    = data['title'] # File name
-        self.size     = data['size'] # File size in bytes
-        self.ext      = data['ext'] # File extension
-        self.url      = data['url'] # File url
-        self.add_date = data['date'] # Date
+        self.title    = data['title']    # File name
+        self.size     = data['size']     # File size in bytes
+        self.ext      = data['ext']      # File extension
+        self.url      = data['url']      # File url
+        self.add_date = data['date']     # Date
 
 
     def __str__(self):
