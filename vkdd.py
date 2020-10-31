@@ -91,6 +91,8 @@ def parse_args(desc: str):
     )
 
     return args_parser.parse_args()
+
+
 def get_user_token(settings: str):
     app_id = input(
             green_paint("Enter vk app ID: ")
@@ -126,7 +128,6 @@ def get_user_token(settings: str):
 
 
 class VkDocument:
-
     def __init__(self, data):
         self.id = data['id'] # File ID
         self.owner_id = data['owner_id'] # File owner ID
@@ -153,6 +154,7 @@ class VkDocument:
 {green_paint('Date of add:')}\t {add_date}
 {green_paint('Size:')}\t         {B} Bytes | {KB} KB | {MB} MB
                 """
+
 
     def download(self, loot_dir):
         doc_id = self.id
@@ -205,7 +207,6 @@ def printTotalInfo(docs):
     print(t+z)
 
 
-
 def downloadDocs(docs, nthreads, loot_dir):
     with ThreadPoolExecutor(max_workers=nthreads) as executor:
         futures = [executor.submit(doc.download, loot_dir) for doc in docs]
@@ -216,9 +217,8 @@ def downloadDocs(docs, nthreads, loot_dir):
                 raise Exception
 
 
-
 def main():
-    BANNER = """HHHHHHHHH"""
+    BANNER = green_paint("""VKDOCDOWNLOAD""")
     DESC = "Search and download vk.com documents"
     args = parse_args(DESC)
 
@@ -230,6 +230,7 @@ def main():
     SETTINGS_FILE = Path(args.settings)
 
 
+    print(BANNER)
     if not SETTINGS_FILE.exists():
         TOKEN = get_user_token(SETTINGS_FILE)
     else:
