@@ -15,30 +15,30 @@
 ### Search without saving
 
 ```bash
-  python3 vkdd.py [Query]
+  python3 vkdd.py -s [Query]
 ```
 
 ### Search with saving
 
 ```bash
-  python3 vkdd.py -s [Query]
+  python3 vkdd.py -s [Query] --save
 ```
 
 ### Change settings file
 > Default settings file: settings.ini
 
 ```bash
-  python3 vkdd.py --settings [settings_file_name + .ini] [Query]
+  python3 vkdd.py --settings [settings_file_name + .ini] -s [Query]
 ```
 
 ### Change save path
 > Default loot path: ./loot
 
 ```bash
-  python3 vkdd.py -s -p/--path [path] [Query]
+  python3 vkdd.py -s -p/--path [path] [Query] --save
 ```
 
 ### Sorting by extension
 ```bash
-  python3 vkdd.py -e pdf jpeg.. [Query]
+  python3 vkdd.py -e pdf jpeg.. -s [Query]
 ```

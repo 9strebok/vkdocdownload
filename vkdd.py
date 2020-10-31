@@ -47,15 +47,17 @@ def red_paint_with_output_reverse(text: str, output):
 def parse_args(desc: str):
     args_parser = ArgumentParser(desc)
 
-    # Query: str => args.query
+    # Search query: str => args.search
     args_parser.add_argument(
-        "query",
-        help = "python3 vkdocdownloader.py [Flags] [Search Query]"
+        "-s", "--search",
+        help = "python3 vkdocdownloader.py [Flags] [Search Query]",
+        action = "store",
+        type = str
     )
 
     # Save: bool => args.save
     args_parser.add_argument(
-        "-s", "--save",
+        "--save",
         help = "python3 vkdocdownloader.py -s [Search query]",
         action = "store_true"
     )
@@ -180,9 +182,7 @@ def search_docs(query, token):
     data     = json.loads(response.read().decode())
 
     if 'error' in data and data['error']['error_code'] == 5:
-        print(
-            red_paint(f"Invalid user token. Try to get new. Delete settings file and restart")
-        )
+        print(red_paint(f"Invalid user token. Try to get new. Delete settings file and restart"))
         exit(1)
     else:
         docs = [VkDocument(item) for item in data['response']['items']]
@@ -218,7 +218,7 @@ def main():
     DESC = "Search and download vk.com documents"
     args = parse_args(DESC)
 
-    QUERY = args.query
+    QUERY = args.search
     SAVE = args.save
     EXTENSIONS = args.extensions
     LOOT_DIR = args.path
@@ -243,8 +243,9 @@ def main():
         docs = list(filter(lambda doc: doc.ext in EXTENSIONS, docs))
 
     docs.sort(key=lambda doc: doc.add_date, reverse=True)
-    [print(green_paint(doc)) for doc in docs]
-    printTotalInfo(docs)
+    if not SAVE:
+        [print(green_paint(doc)) for doc in docs]
+        printTotalInfo(docs)
 
     if SAVE:
         loot_path = Path(LOOT_DIR)
