@@ -6,11 +6,10 @@ import json
 from pathlib import Path
 from time import time, ctime
 
-from colorama import Fore, Back, Style
-from urllib.error import HTTPError
+import webbrowser
 from urllib.parse import urlencode
 from urllib.request import urlopen
-import webbrowser
+from colorama import Fore, Style
 
 
 
@@ -126,24 +125,29 @@ def get_user_token(settings: str):
 
 
 class VkDocument:
+    """
+    VK DOCUMENT
+
+    in
+    """
     def __init__(self, data):
-        self.id       = data['id']       # File ID
+        self.identificator = data['id']       # File ID
         self.owner_id = data['owner_id'] # File owner ID
-        self.title    = data['title']    # File name
-        self.size     = data['size']     # File size in bytes
-        self.ext      = data['ext']      # File extension
-        self.url      = data['url']      # File url
+        self.title = data['title']    # File name
+        self.size = data['size']     # File size in bytes
+        self.ext = data['ext']      # File extension
+        self.url = data['url']      # File url
         self.add_date = data['date']     # Date
 
 
     def __str__(self):
-        title         = self.title
-        doc_id        = self.id
-        owner         = self.owner_id
-        add_date      = date.fromtimestamp(self.add_date)
-        B             = self.size
-        KB            = round(self.size/(2**10), 2)
-        MB            = round(self.size/(2**20), 2)
+        title = self.title
+        doc_id = self.identificator
+        owner = self.owner_id
+        add_date = date.fromtimestamp(self.add_date)
+        B = self.size
+        KB = round(self.size/(2**10), 2)
+        MB = round(self.size/(2**20), 2)
 
         return f"""
 {green_paint('Title:')}\t         {title}
@@ -155,9 +159,9 @@ class VkDocument:
 
 
     def download(self, loot_dir):
-        doc_id        = self.id
-        owner         = self.owner_id
-        title         = self.title
+        doc_id = self.identificator
+        owner = self.owner_id
+        title = self.title
 
         filename = f"{doc_id}_{owner}_{title}"
 
@@ -198,7 +202,8 @@ def printTotalInfo(docs):
     GB         = round(total_size/(2**30), 2)
 
     t = green_paint_with_output("\nTotal files:", nfiles)
-    z = green_paint_with_output("\nTotal size: ", f"{str(B)} Bytes | {str(KB)} KB | {str(MB)} MB | {str(GB)} GB")
+    z = green_paint_with_output("\nTotal size: ", f"{str(B)} Bytes | {str(KB)} KB | \
+                                                        {str(MB)} MB | {str(GB)} GB")
 
     print(t+z)
 
@@ -209,8 +214,8 @@ def downloadDocs(docs, nthreads, loot_dir):
         for future in as_completed(futures):
             try:
                 print(future.result())
-            except Exception:
-                raise Exception
+            except Exception as error:
+                raise error
 
 
 def main():
@@ -231,8 +236,8 @@ def main():
         TOKEN = get_user_token(SETTINGS_FILE)
     else:
         config = ConfigParser()
-        with SETTINGS_FILE.open() as sf:
-            config.read_file(sf)
+        with SETTINGS_FILE.open() as settings_file:
+            config.read_file(settings_file)
         TOKEN = config.get("SETTINGS", "user_token")
     print(green_paint("OK"))
     print(green_paint("Searching..."))
@@ -244,7 +249,8 @@ def main():
 
     docs.sort(key=lambda doc: doc.add_date, reverse=True)
     if not SAVE:
-        [print(green_paint(doc)) for doc in docs]
+        for doc in docs:
+            print(green_paint(doc))
         printTotalInfo(docs)
 
     if SAVE:
@@ -254,7 +260,8 @@ def main():
         start = time()
 
         print(
-            green_paint_with_output_reverse("\nStart downloading of found files at:", str(ctime(start)))
+            green_paint_with_output_reverse("\nStart downloading of found files at:",
+                                            str(ctime(start)))
         )
 
         downloadDocs(docs, THREADS, LOOT_DIR)
