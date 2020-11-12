@@ -205,7 +205,7 @@ def printTotalInfo(docs):
 
     t = green_paint_with_output("\nTotal files:", nfiles)
     z = green_paint_with_output("\nTotal size: ", f"{str(B)} Bytes | {str(KB)} KB | \
-                                                        {str(MB)} MB | {str(GB)} GB")
+{str(MB)} MB | {str(GB)} GB")
 
     print(t+z)
 
@@ -227,7 +227,7 @@ def main():
 
     QUERY = args.search
     SAVE = args.save
-    EXTENSIONS = args.extensions[0]
+    EXTENSIONS = args.extensions
     LOOT_DIR = args.path
     THREADS = args.threads
     SETTINGS_FILE = Path(args.settings)
