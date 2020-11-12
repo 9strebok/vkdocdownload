@@ -5,6 +5,7 @@ from datetime import date, timedelta
 import json
 from pathlib import Path
 from time import time, ctime
+from sys import exit as sys_exit
 
 import webbrowser
 from urllib.parse import urlencode
@@ -65,8 +66,8 @@ def parse_args(desc: str):
     args_parser.add_argument(
         "-e", "--extensions",
         help = "python3 vkdocdownloader.py -e [pdf, doc, jpeg..]",
-        action = "append",
-        default = []
+        nargs="+",
+        default = [],
     )
 
     # Path: str => args.path
@@ -232,6 +233,9 @@ def main():
     SETTINGS_FILE = Path(args.settings)
 
 
+    print(EXTENSIONS)
+    return
+
     print(BANNER)
     if not SETTINGS_FILE.exists():
         TOKEN = get_user_token(SETTINGS_FILE)
@@ -249,30 +253,33 @@ def main():
         docs = list(filter(lambda doc: doc.ext in EXTENSIONS, docs))
 
     docs.sort(key=lambda doc: doc.add_date, reverse=True)
-    if not SAVE:
-        for doc in docs:
-            print(green_paint(doc))
-        printTotalInfo(docs)
 
-    if SAVE:
-        loot_path = Path(LOOT_DIR)
-        if not loot_path.exists() or not loot_path.is_dir():
-            loot_path.mkdir()
-        start = time()
+    try:
+        if SAVE:
+            loot_path = Path(LOOT_DIR)
+            if not loot_path.exists() or not loot_path.is_dir():
+                loot_path.mkdir()
+            start = time()
 
-        print(
-            green_paint_with_output_reverse("\nStart downloading of found files at:",
-                                            str(ctime(start)))
-        )
+            print(
+                green_paint_with_output_reverse("\nStart downloading of found files at:",
+                                                str(ctime(start)))
+            )
 
-        downloadDocs(docs, THREADS, LOOT_DIR)
-        finish = time()
-        d = ctime(finish)
-        ttime = timedelta(seconds = finish - start)
-        print(
-            green_paint_with_output_reverse("Finish_at:", str(d)),
-            green_paint_with_output_reverse("Total time:", str(ttime))
-        )
+            downloadDocs(docs, THREADS, LOOT_DIR)
+            finish = time()
+            d = ctime(finish)
+            ttime = timedelta(seconds = finish - start)
+            print(
+                green_paint_with_output_reverse("Finish_at:", str(d)),
+                green_paint_with_output_reverse("Total time:", str(ttime))
+            )
+        else:
+            for doc in docs:
+                print(green_paint(doc))
+            printTotalInfo(docs)
+    except:
+        sys_exit(0)
 
 
 if __name__ == "__main__":
