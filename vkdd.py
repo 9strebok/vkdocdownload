@@ -65,8 +65,9 @@ def parse_args(desc: str):
     args_parser.add_argument(
         "-e", "--extensions",
         help = "python3 vkdocdownloader.py -e [pdf, doc, jpeg..]",
+        nargs="+",
         action = "append",
-        default = []
+        default = [],
     )
 
     # Path: str => args.path
@@ -226,11 +227,10 @@ def main():
 
     QUERY = args.search
     SAVE = args.save
-    EXTENSIONS = args.extensions
+    EXTENSIONS = args.extensions[0]
     LOOT_DIR = args.path
     THREADS = args.threads
     SETTINGS_FILE = Path(args.settings)
-
 
     print(BANNER)
     if not SETTINGS_FILE.exists():
