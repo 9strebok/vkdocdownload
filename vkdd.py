@@ -227,15 +227,10 @@ def main():
 
     QUERY = args.search
     SAVE = args.save
-    EXTENSIONS = args.extensions
+    EXTENSIONS = args.extensions[0]
     LOOT_DIR = args.path
     THREADS = args.threads
     SETTINGS_FILE = Path(args.settings)
-
-
-    print(EXTENSIONS)
-    return
-
     print(BANNER)
     if not SETTINGS_FILE.exists():
         TOKEN = get_user_token(SETTINGS_FILE)
