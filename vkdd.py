@@ -158,11 +158,10 @@ class VkDocument:
 
 
     def download(self, loot_dir):
-        doc_id = self.identificator
         owner = self.owner_id
         title = self.title
 
-        filename = f"{doc_id}_{owner}_{title}"
+        filename = f"{owner}_{title}"
 
         try:
             data = urlopen(self.url).read()
