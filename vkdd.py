@@ -127,8 +127,6 @@ def get_user_token(settings: str):
 class VkDocument:
     """
     VK DOCUMENT
-
-    in
     """
     def __init__(self, data):
         self.identificator = data['id']       # File ID
@@ -170,8 +168,11 @@ class VkDocument:
         except Exception:
             pass
 
-        Path(loot_dir + "/" + filename).write_bytes(data)
-        return green_paint_with_output("Saved:", filename)
+        try:
+            Path(loot_dir + "/" + filename).write_bytes(data)
+            return green_paint_with_output("Saved:", filename)
+        except:
+            return red_paint_with_output("ERROR:", filename)
 
 
 def search_docs(query, token):
