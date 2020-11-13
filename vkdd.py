@@ -47,13 +47,13 @@ class VkDocument:
     VK DOCUMENT
     """
     def __init__(self, data: dict):
-        self.identificator = data['id']       # File ID
+        self.identificator = data['id'] # File ID
         self.owner_id = data['owner_id'] # File owner ID
-        self.title = data['title']    # File name
-        self.size = data['size']     # File size in bytes
-        self.ext = data['ext']      # File extension
-        self.url = data['url']      # File url
-        self.add_date = data['date']     # Date
+        self.title = data['title'] # File name
+        self.size = data['size'] # File size in bytes
+        self.ext = data['ext'] # File extension
+        self.url = data['url'] # File url
+        self.add_date = data['date'] # Date
 
 
     def __str__(self):
@@ -70,7 +70,7 @@ class VkDocument:
 {green_paint('ID:')}\t         {doc_id}
 {green_paint('Owner:')}\t         {owner}
 {green_paint('Date of add:')}\t {add_date}
-{green_paint('Size:')}\t         {B} Bytes | {KB} KB | {MB} MB
+{green_paint('Size:')}\t         {B} Bytes | {KB} KB | {MB} MB 
 """
 
 
@@ -84,19 +84,18 @@ class VkDocument:
         """
         owner = self.owner_id
         title = self.title
-
-        file_name = f"{owner}_{title}"
+        saving_file_name = f"{owner}_{title}"
 
         try:
             data = urlopen(self.url).read()
-        except Exception:
-            pass
+        except:
+            print(red_paint_with_output("ERROR:", "WITH URLOPEN"))
 
         try:
-            Path(loot_dir + "/" + file_name).write_bytes(data)
-            return green_paint_with_output("Saved:", file_name)
+            Path(loot_dir + "/" + saving_file_name).write_bytes(data)
+            return green_paint_with_output("Saved:", title)
         except:
-            return red_paint_with_output("ERROR:", file_name)
+            return red_paint_with_output("ERROR:", title)
 
 
 def parse_args(desc: str):
@@ -107,22 +106,22 @@ def parse_args(desc: str):
     args_parser = ArgumentParser(desc)
     # Search query: str => args.search
     args_parser.add_argument(
-        "-s", "--search",
-        help = "python3 vkdd.py [Flags] [Search Query]",
+        "-s", "--searches",
+        help = "python3 vkdd.py [Flags] [Search queries]",
         action = "store",
-        type = str
+        nargs = "+"
     )
     # Save: bool => args.save
     args_parser.add_argument(
         "--save",
-        help = "python3 vkdd.py -s [Search query]",
+        help = "python3 vkdd.py -s [Search queries] --save",
         action = "store_true"
     )
     # Extensions: [] => args.extensions
     args_parser.add_argument(
         "-e", "--extensions",
         help = "python3 vkdd.py -e [pdf, doc, jpeg..]",
-        nargs="+",
+        nargs = "+",
         default = [],
     )
     # Path: str => args.path
@@ -136,7 +135,7 @@ def parse_args(desc: str):
         "-t", "--threads",
         help = "python3 vkdd.py -t [NUMBER_OF_THREADS_USED]",
         type = int,
-        default = 4
+        default = 2
     )
     # Settings: str => args.settings
     args_parser.add_argument(
@@ -157,12 +156,12 @@ def get_user_token(settings_file: str):
     """
     app_id = input(green_paint("Enter vk app ID: ")).strip()
     params = {
-        'client_id':       app_id,
-        'display':         'page',
-        'redirect_uri':    'https://oauth.vk.com/blank.html',
-        'scope':           'docs,offline',
-        'response_type':   'token',
-        'v':               5.68
+        'client_id': app_id,
+        'display': 'page',
+        'redirect_uri': 'https://oauth.vk.com/blank.html',
+        'scope': 'docs,offline',
+        'response_type': 'token',
+        'v': 5.68
     }
     url = f"https://oauth.vk.com/authorize?{urlencode(params)}"
     webbrowser.open(url)
@@ -184,10 +183,10 @@ def search_docs(query: str, token: str):
 
     """
     params = {
-        'q':             query,
-        'count':         1000,
-        'access_token':  token,
-        'v':             5.68
+        'q': query,
+        'count': 1000,
+        'access_token': token,
+        'v': 5.68
     }
 
     url = f'https://api.vk.com/method/docs.search?{urlencode(params)}'
@@ -225,8 +224,8 @@ def print_total_info(docs: VkDocument):
     print(files, size)
 
 
-def download_docs(docs: list, nthreads: int, loot_dir: str):
-    with ThreadPoolExecutor(max_workers = nthreads) as executor:
+def download_docs(docs: list, threads_count: int, loot_dir: str):
+    with ThreadPoolExecutor(max_workers = threads_count) as executor:
         futures = [executor.submit(doc.download, loot_dir) for doc in docs]
         for future in as_completed(futures):
             try:
@@ -237,49 +236,19 @@ def download_docs(docs: list, nthreads: int, loot_dir: str):
                 raise error
 
 
-def main():
-    BANNER = green_paint(
-    r"""
-                   ,--.                           
-               ,--/  /|    ,---,        ,---,     
-       ,---.,---,': / '  .'  .' `\    .'  .' `\   
-      /__./|:   : '/ / ,---.'     \ ,---.'     \  
- ,---.;  ; ||   '   ,  |   |  .`\  ||   |  .`\  | 
-/___/ \  | |'   |  /   :   : |  '  |:   : |  '  | 
-\   ;  \ ' ||   ;  ;   |   ' '  ;  :|   ' '  ;  : 
- \   \  \: |:   '   \  '   | ;  .  |'   | ;  .  | 
-  ;   \  ' .|   |    ' |   | :  |  '|   | :  |  ' 
-   \   \   ''   : |.  \'   : | /  ; '   : | /  ;  
-    \   `  ;|   | '_\.'|   | '` ,/  |   | '` ,/   
-     :   \ |'   : |    ;   :  .'    ;   :  .'     
-      '---" ;   |,'    |   ,.'      |   ,.'       
-            '---'      '---'        '---'         
-                                                  
-    """)
+def vkdd(query: str, token: str, loot_dir: str,
+         threads_count: int,  save: bool, extensions: list):
+    """
+    def vkdd(query: str)
 
-    DESC = "Search and download vk.com documents"
-    args = parse_args(DESC)
-    QUERY = args.search
-    SAVE = args.save
-    EXTENSIONS = args.extensions
-    LOOT_DIR = args.path
-    THREADS = args.threads
-    SETTINGS_FILE = Path(args.settings)
-    print(BANNER)
-    if not SETTINGS_FILE.exists():
-        TOKEN = get_user_token(SETTINGS_FILE)
-    else:
-        config = ConfigParser()
-        with SETTINGS_FILE.open() as settings_file:
-            config.read_file(settings_file)
-        TOKEN = config.get("SETTINGS", "user_token")
-    docs = search_docs(QUERY, TOKEN)
-    if EXTENSIONS:
-        docs = list(filter(lambda doc: doc.ext in EXTENSIONS, docs))
+    """
+    docs = search_docs(query, token)
+    if extensions:
+        docs = list(filter(lambda doc: doc.ext in extensions, docs))
 
     docs.sort(key=lambda doc: doc.add_date, reverse=True)
-    if SAVE:
-        loot_path = Path(LOOT_DIR)
+    if save:
+        loot_path = Path(loot_dir)
         if not loot_path.exists() or not loot_path.is_dir():
             loot_path.mkdir()
         start = time()
@@ -289,19 +258,73 @@ def main():
             str(ctime(start)))
         )
 
-        download_docs(docs, THREADS, LOOT_DIR)
+        download_docs(docs, threads_count, loot_dir)
         finish = time()
         d = ctime(finish)
-        ttime = timedelta(seconds = finish - start)
+        ttime = timedelta(seconds = (finish - start))
+
         print(
             green_paint_with_output_reverse("Finish_at:", str(d)),
             green_paint_with_output_reverse("Total time:", str(ttime))
         )
+
     else:
         print(green_paint("Searching..."))
         for doc in docs:
             print(green_paint(doc))
         print_total_info(docs)
+
+
+
+
+def main():
+    BANNER = green_paint(
+    r"""
+                   ,--.
+               ,--/  /|    ,---,        ,---,
+       ,---.,---,': / '  .'  .' `\    .'  .' `\
+      /__./|:   : '/ / ,---.'     \ ,---.'     \
+ ,---.;  ; ||   '   ,  |   |  .`\  ||   |  .`\  |
+/___/ \  | |'   |  /   :   : |  '  |:   : |  '  |
+\   ;  \ ' ||   ;  ;   |   ' '  ;  :|   ' '  ;  :
+ \   \  \: |:   '   \  '   | ;  .  |'   | ;  .  |
+  ;   \  ' .|   |    ' |   | :  |  '|   | :  |  '
+   \   \   ''   : |.  \'   : | /  ; '   : | /  ;
+    \   `  ;|   | '_\.'|   | '` ,/  |   | '` ,/
+     :   \ |'   : |    ;   :  .'    ;   :  .'
+      '---" ;   |,'    |   ,.'      |   ,.'
+            '---'      '---'        '---'
+
+    """)
+
+    DESC = "Search and download vk.com documents"
+    args = parse_args(DESC)
+    QUERIES = args.searches
+    SAVE = args.save
+    EXTENSIONS = args.extensions
+    LOOT_DIR = args.path
+    THREADS = args.threads
+    SETTINGS_FILE = Path(args.settings)
+    print(BANNER)
+
+    # GETTING A TOKEN
+    if not SETTINGS_FILE.exists():
+        TOKEN = get_user_token(SETTINGS_FILE)
+    else:
+        config = ConfigParser()
+        with SETTINGS_FILE.open() as settings_file:
+            config.read_file(settings_file)
+        TOKEN = config.get("SETTINGS", "user_token")
+
+    # A RUNNING VKDDs
+    for que in QUERIES:
+        vkdd(query = que,
+             token = TOKEN,
+             loot_dir = LOOT_DIR,
+             threads_count = THREADS,
+             save = SAVE,
+             extensions = EXTENSIONS)
+        print()
 
 
 if __name__ == "__main__":
