@@ -238,7 +238,25 @@ def download_docs(docs: list, nthreads: int, loot_dir: str):
 
 
 def main():
-    BANNER = green_paint("""VKDOCDOWNLOAD""")
+    BANNER = green_paint(
+    r"""
+                   ,--.                           
+               ,--/  /|    ,---,        ,---,     
+       ,---.,---,': / '  .'  .' `\    .'  .' `\   
+      /__./|:   : '/ / ,---.'     \ ,---.'     \  
+ ,---.;  ; ||   '   ,  |   |  .`\  ||   |  .`\  | 
+/___/ \  | |'   |  /   :   : |  '  |:   : |  '  | 
+\   ;  \ ' ||   ;  ;   |   ' '  ;  :|   ' '  ;  : 
+ \   \  \: |:   '   \  '   | ;  .  |'   | ;  .  | 
+  ;   \  ' .|   |    ' |   | :  |  '|   | :  |  ' 
+   \   \   ''   : |.  \'   : | /  ; '   : | /  ;  
+    \   `  ;|   | '_\.'|   | '` ,/  |   | '` ,/   
+     :   \ |'   : |    ;   :  .'    ;   :  .'     
+      '---" ;   |,'    |   ,.'      |   ,.'       
+            '---'      '---'        '---'         
+                                                  
+    """)
+
     DESC = "Search and download vk.com documents"
     args = parse_args(DESC)
     QUERY = args.search
@@ -255,8 +273,6 @@ def main():
         with SETTINGS_FILE.open() as settings_file:
             config.read_file(settings_file)
         TOKEN = config.get("SETTINGS", "user_token")
-    print(green_paint("OK"))
-    print(green_paint("Searching..."))
     docs = search_docs(QUERY, TOKEN)
     if EXTENSIONS:
         docs = list(filter(lambda doc: doc.ext in EXTENSIONS, docs))
@@ -282,6 +298,7 @@ def main():
             green_paint_with_output_reverse("Total time:", str(ttime))
         )
     else:
+        print(green_paint("Searching..."))
         for doc in docs:
             print(green_paint(doc))
         print_total_info(docs)
