@@ -67,7 +67,7 @@ class VkDocument:
 {green_paint('ID:')}\t         {doc_id}
 {green_paint('Owner:')}\t         {owner}
 {green_paint('Date of add:')}\t {add_date}
-{green_paint('Size:')}\t         {B} Bytes | {KB} KB | {MB} MB 
+{green_paint('Size:')}\t         {B} Bytes | {KB} KB | {MB} MB
 """
 
 
@@ -108,7 +108,7 @@ def parse_args(desc: str):
         Flags:
             -s/--searches   - Search queries    - type [str]
             --save          - Save or not       - type bool
-            -p/--path       - Save path         - type str
+            -p/--paths      - Save paths        - type [str]
             -t/--threads    - Number of threads - type int
             -e/--extensions - Extension list    - type [str]
             --settings      - Settings file     - type str
@@ -139,9 +139,11 @@ def parse_args(desc: str):
     )
     # Path: str => args.path
     args_parser.add_argument(
-        "-p", "--path",
-        help = "python3 vkdd.py -p [PATH_TO_FOLDER] [Query]",
-        default = "./loot/"
+        "-p", "--paths",
+        help = "python3 vkdd.py -p [PATHS_TO_FOLDER] [Query]",
+        nargs = "+",
+        action = "store",
+        default = ["./loot/"]
     )
     # Threads: int => args.threads
     args_parser.add_argument(
@@ -320,7 +322,7 @@ def main():
     QUERIES = args.searches
     SAVE = args.save
     EXTENSIONS = args.extensions
-    LOOT_DIR = args.path
+    LOOT_DIRS = args.paths
     THREADS = args.threads
     SETTINGS_FILE = Path(args.settings)
 
@@ -336,14 +338,28 @@ def main():
         TOKEN = config.get("SETTINGS", "user_token")
 
     # A RUNNING VKDDs
-    for que in QUERIES:
-        vkdd(query = que,
-             token = TOKEN,
-             loot_dir = LOOT_DIR,
-             threads_count = THREADS,
-             save = SAVE,
-             extensions = EXTENSIONS)
-        print()
+    if len(QUERIES) == len(LOOT_DIRS):
+        for n, que in enumerate(QUERIES):
+            vkdd(query = que,
+                token = TOKEN,
+                loot_dir = LOOT_DIRS[n],
+                threads_count = THREADS,
+                save = SAVE,
+                extensions = EXTENSIONS)
+            print()
+
+    elif len(QUERIES) >= len(LOOT_DIRS):
+        for que in QUERIES:
+            vkdd(query = que,
+                 token = TOKEN,
+                 loot_dir = LOOT_DIRS[0],
+                 threads_count = THREADS,
+                 save = SAVE,
+                 extensions = EXTENSIONS)
+            print()
+
+    else:
+        print(red_paint_with_output("ERROR", "len queries < len loot dirs"))
 
 
 if __name__ == "__main__":
