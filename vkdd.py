@@ -6,13 +6,11 @@ import json
 from pathlib import Path
 from time import time, ctime
 
-import webbrowser
+from colorama import Fore, Style
 from urllib.parse import urlencode
 from urllib.request import urlopen
-from colorama import Fore, Style
+import webbrowser
 
-
-# Beatify functions
 def green_paint(text: str):
     return f"{Fore.GREEN}{text}{Style.RESET_ALL}"
 
@@ -39,7 +37,6 @@ def red_paint_with_output(text: str, output):
 def red_paint_with_output_reverse(text: str, output):
     output = str(output)
     return f"{text}{Fore.RED} {output}{Style.RESET_ALL}"
-
 
 
 class VkDocument:
@@ -100,11 +97,27 @@ class VkDocument:
 
 def parse_args(desc: str):
     """
+    Usage:
+        args = parse_args()
+        number_of_threads = args.threads
+
+    Realisation:
     def parse_args(desc: str)
         Parsing cl arguments and add --help
+
+        Flags:
+            -s/--searches   - Search queries    - type [str]
+            --save          - Save or not       - type bool
+            -p/--path       - Save path         - type str
+            -t/--threads    - Number of threads - type int
+            -e/--extensions - Extension list    - type [str]
+            --settings      - Settings file     - type str
+
+        return args_parser.parse_args()
+
     """
     args_parser = ArgumentParser(desc)
-    # Search query: str => args.search
+    # Search query: [str] => args.search
     args_parser.add_argument(
         "-s", "--searches",
         help = "python3 vkdd.py [Flags] [Search queries]",
@@ -117,7 +130,7 @@ def parse_args(desc: str):
         help = "python3 vkdd.py -s [Search queries] --save",
         action = "store_true"
     )
-    # Extensions: [] => args.extensions
+    # Extensions: [str] => args.extensions
     args_parser.add_argument(
         "-e", "--extensions",
         help = "python3 vkdd.py -e [pdf, doc, jpeg..]",
@@ -154,6 +167,7 @@ def get_user_token(settings_file: str):
     return {token}
 
     """
+
     app_id = input(green_paint("Enter vk app ID: ")).strip()
     params = {
         'client_id': app_id,
@@ -165,13 +179,16 @@ def get_user_token(settings_file: str):
     }
     url = f"https://oauth.vk.com/authorize?{urlencode(params)}"
     webbrowser.open(url)
+
     token = input(green_paint("Parse your access token there: ")).strip()
     print(green_paint_with_output("Saving your App ID and TOKEN in", settings_file))
+
     config = ConfigParser()
     config.add_section("SETTINGS")
     config.set("SETTINGS", "app_id", app_id)
     config.set("SETTINGS", "user_token", token)
     settigns_path = Path(settings_file)
+
     with settigns_path.open(mode = "w") as settings:
         config.write(settings)
     return token
@@ -295,7 +312,8 @@ def main():
       '---" ;   |,'    |   ,.'      |   ,.'
             '---'      '---'        '---'
 
-    """)
+    """
+    )
 
     DESC = "Search and download vk.com documents"
     args = parse_args(DESC)
@@ -305,6 +323,7 @@ def main():
     LOOT_DIR = args.path
     THREADS = args.threads
     SETTINGS_FILE = Path(args.settings)
+
     print(BANNER)
 
     # GETTING A TOKEN
