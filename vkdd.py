@@ -11,32 +11,35 @@ from urllib.parse import urlencode
 from urllib.request import urlopen
 import webbrowser
 
+
+
+BOLD = '\033[1m'
 def green_paint(text: str):
-    return f"{Fore.GREEN}{text}{Style.RESET_ALL}"
+    return f"{BOLD}{Style.BRIGHT}{Fore.GREEN}{text}{Style.RESET_ALL}"
 
 
 def green_paint_with_output(text: str, output):
     output = str(output)
-    return f"{Fore.GREEN}{text}{Style.RESET_ALL} {output}"
+    return f"{BOLD}{Style.BRIGHT}{Fore.GREEN}{text}{Style.RESET_ALL} {output}"
 
 
 def green_paint_with_output_reverse(text: str, output):
     output = str(output)
-    return f"{text}{Fore.GREEN} {output}{Style.RESET_ALL}"
+    return f"{BOLD}{Style.BRIGHT}{text}{Fore.GREEN} {output}{Style.RESET_ALL}"
 
 
 def red_paint(text: str):
-    return f"{Fore.RED}{text}{Style.RESET_ALL}"
+    return f"{BOLD}{Style.BRIGHT}{Fore.RED}{text}{Style.RESET_ALL}"
 
 
 def red_paint_with_output(text: str, output):
     output = str(output)
-    return f"{Fore.RED}{text}{Style.RESET_ALL} {output}"
+    return f"{BOLD}{Style.BRIGHT}{Fore.RED}{text}{Style.RESET_ALL} {output}"
 
 
 def red_paint_with_output_reverse(text: str, output):
     output = str(output)
-    return f"{text}{Fore.RED} {output}{Style.RESET_ALL}"
+    return f"{BOLD}{Style.BRIGHT}{text}{Fore.RED} {output}{Style.RESET_ALL}"
 
 
 class VkDocument:
@@ -107,10 +110,10 @@ def parse_args(desc: str):
 
         Flags:
             -s/--searches   - Search queries    - type [str]
-            --save          - Save or not       - type bool
             -p/--paths      - Save paths        - type [str]
             -t/--threads    - Number of threads - type int
             -e/--extensions - Extension list    - type [str]
+            --save          - Save or not       - type bool
             --settings      - Settings file     - type str
 
         return args_parser.parse_args()
@@ -140,8 +143,7 @@ def parse_args(desc: str):
     # Path: str => args.path
     args_parser.add_argument(
         "-p", "--paths",
-        help = "python3 vkdd.py -p [PATHS_TO_FOLDER] [Query]",
-        nargs = "+",
+        help = "python3 vkdd.py -p [PATHS_TO_FOLDER] [Query]", nargs = "+",
         action = "store",
         default = ["./loot/"]
     )
@@ -292,7 +294,6 @@ def vkdd(query: str, token: str, loot_dir: str,
         for doc in docs:
             print(green_paint(doc))
         print_total_info(docs)
-
 
 
 
