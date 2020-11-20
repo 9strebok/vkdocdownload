@@ -12,34 +12,32 @@ from urllib.request import urlopen
 import webbrowser
 
 
-
-BOLD = '\033[1m'
 def green_paint(text: str):
-    return f"{BOLD}{Style.BRIGHT}{Fore.GREEN}{text}{Style.RESET_ALL}"
+    return f"{Style.BRIGHT}{Fore.GREEN}{text}{Style.RESET_ALL}"
 
 
 def green_paint_with_output(text: str, output):
     output = str(output)
-    return f"{BOLD}{Style.BRIGHT}{Fore.GREEN}{text}{Style.RESET_ALL} {output}"
+    return f"{Style.BRIGHT}{Fore.GREEN}{text}{Style.RESET_ALL} {output}"
 
 
 def green_paint_with_output_reverse(text: str, output):
     output = str(output)
-    return f"{BOLD}{Style.BRIGHT}{text}{Fore.GREEN} {output}{Style.RESET_ALL}"
+    return f"{Style.BRIGHT}{text}{Fore.GREEN} {output}{Style.RESET_ALL}"
 
 
 def red_paint(text: str):
-    return f"{BOLD}{Style.BRIGHT}{Fore.RED}{text}{Style.RESET_ALL}"
+    return f"{Style.BRIGHT}{Fore.RED}{text}{Style.RESET_ALL}"
 
 
 def red_paint_with_output(text: str, output):
     output = str(output)
-    return f"{BOLD}{Style.BRIGHT}{Fore.RED}{text}{Style.RESET_ALL} {output}"
+    return f"{Style.BRIGHT}{Fore.RED}{text}{Style.RESET_ALL} {output}"
 
 
 def red_paint_with_output_reverse(text: str, output):
     output = str(output)
-    return f"{BOLD}{Style.BRIGHT}{text}{Fore.RED} {output}{Style.RESET_ALL}"
+    return f"{Style.BRIGHT}{text}{Fore.RED} {output}{Style.RESET_ALL}"
 
 
 class VkDocument:
@@ -160,7 +158,7 @@ def parse_args(desc: str):
         help = "python3 vkdd.py --settings [SETTINGS_FILE]",
         default = "settings.ini"
     )
-    return args_parser.parse_args()
+    return args_parser.parse_args(), args_parser.format_help()
 
 
 def get_user_token(settings_file: str):
@@ -319,7 +317,8 @@ def main():
     )
 
     DESC = "Search and download vk.com documents"
-    args = parse_args(DESC)
+
+    args, HELP = parse_args(DESC)
     QUERIES = args.searches
     SAVE = args.save
     EXTENSIONS = args.extensions
@@ -339,28 +338,32 @@ def main():
         TOKEN = config.get("SETTINGS", "user_token")
 
     # A RUNNING VKDDs
-    if len(QUERIES) == len(LOOT_DIRS):
-        for n, que in enumerate(QUERIES):
-            vkdd(query = que,
-                token = TOKEN,
-                loot_dir = LOOT_DIRS[n],
-                threads_count = THREADS,
-                save = SAVE,
-                extensions = EXTENSIONS)
-            print()
-
-    elif len(QUERIES) >= len(LOOT_DIRS):
-        for que in QUERIES:
-            vkdd(query = que,
-                 token = TOKEN,
-                 loot_dir = LOOT_DIRS[0],
-                 threads_count = THREADS,
-                 save = SAVE,
-                 extensions = EXTENSIONS)
-            print()
+    if QUERIES is None:
+        print(HELP)
 
     else:
-        print(red_paint_with_output("ERROR", "len queries < len loot dirs"))
+        if len(QUERIES) == len(LOOT_DIRS):
+            for n, que in enumerate(QUERIES):
+                vkdd(query = que,
+                    token = TOKEN,
+                    loot_dir = LOOT_DIRS[n],
+                    threads_count = THREADS,
+                    save = SAVE,
+                    extensions = EXTENSIONS)
+                print()
+
+        elif len(QUERIES) >= len(LOOT_DIRS):
+            for que in QUERIES:
+                vkdd(query = que,
+                     token = TOKEN,
+                     loot_dir = LOOT_DIRS[0],
+                     threads_count = THREADS,
+                     save = SAVE,
+                     extensions = EXTENSIONS)
+                print()
+
+        else:
+            print(red_paint_with_output("ERROR", "len queries < len loot dirs"))
 
 
 if __name__ == "__main__":
